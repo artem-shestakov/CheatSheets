@@ -13,9 +13,9 @@ virsh net-autostart --network k8s-network
 vagrant up
 ```
 
-## Tools
-### Logs
-* [kubetail](https://github.com/johanhaleby/kubetail)
-* [Stern](https://github.com/stern/stern)
-* [Kail](https://github.com/boz/kail?tab=readme-ov-file)
-* [Logcli](https://grafana.com/docs/loki/latest/query/logcli/)
+## Tips and Tricks
+* To fast create yaml use `dry-run=client -o yaml > fiole.yaml`
+```shell
+k run web --image nginx --dry-run=client -o yaml > pod.yaml
+k create deployment web --image nginx --replicas 3 --port=80 --dry-run=client -o yaml > deployment.yaml
+```
