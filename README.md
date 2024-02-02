@@ -1,3 +1,3 @@
 # DevOps Notes
 
-Obsidian test
+[[DevOps_notes/k8s/Readme|Readme]]
