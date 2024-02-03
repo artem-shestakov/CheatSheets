@@ -3,7 +3,8 @@
 >For libvirt
 ### Network
 
-* Create natwork
+* Create network
+![[k8s_net.xml]]
 ```shell
 virsh net-define --file k8s_net.xml 
 virsh net-start k8s-network
