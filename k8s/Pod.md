@@ -9,6 +9,7 @@
 - ps
 
 ## Create pod in Linux
+### Run process in namespaces
 ```shell
 # Test files
 touch /tmp/a /tmp/b /tmp/c
@@ -63,4 +64,17 @@ ps
 ip a
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+```
+### Create cgroup
+v2
+```shell
+# Add bash in box PID to cgroup and set max memory 10K
+mkdir /sys/fs/cgroup/chroot
+echo "10K" > /sys/fs/cgroup/chroot/memory.max
+echo <PID_bash_in_box> > /sys/fs/cgroup/chroot/cgroup.procs
+
+# Run insude box bash
+ls
+Killed
+
 ```
