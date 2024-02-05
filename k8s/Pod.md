@@ -8,6 +8,18 @@
 - unshare
 - ps
 
+## Find pod cgroup
+```shell
+# Get process ID
+ps ax | grep nginx
+   7681 ?        SNs    0:00 nginx: master process nginx -g daemon off;
+   7722 ?        SN     0:00 nginx: worker process
+
+# Get cgroup path
+cat /proc/7681/cgroup 
+0::/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-pod0690959e_527a_4618_a4a2_29fce7882e21.slice/cri-containerd-91e5bc91c900ea732b1c65bf15c274e7be860b5740ab0c6578102690139bac3b.scope
+```
+
 ## Create pod in Linux
 ### Run process in namespaces
 ```shell
