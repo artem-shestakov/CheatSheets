@@ -1,16 +1,18 @@
 # K8s
-## Test Environment
+## Playgrounds
 >For libvirt
 ### Network
 
 * Create network
-![[k8s_net.xml]]
+[Network for playground](./playgrounds/k8s_net.xml)
 ```shell
 virsh net-define --file k8s_net.xml 
 virsh net-start k8s-network
 virsh net-autostart --network k8s-network
 ```
 ### Create environment
+1. Select type in directory `playgrounds`
+2. Create VMs
 ```shell
 vagrant up
 ```
