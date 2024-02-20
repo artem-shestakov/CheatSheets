@@ -1,0 +1,4 @@
+collections:
+  - name: https://github.com/artem-shestakov/ansible-k8s.git
+    type: git
+    version: master

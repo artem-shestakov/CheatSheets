@@ -1,0 +1,6 @@
+---
+- name: Install K8s cluster
+  hosts: k8s_cluster
+  tasks:
+    - name: Import a playbook
+      ansible.builtin.import_playbook: artem_shestakov.k8s.cluster

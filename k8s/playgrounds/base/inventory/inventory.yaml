@@ -1,0 +1,19 @@
+---
+control_planes:
+  hosts:
+    control_plane_01:
+      ansible_host: 10.100.0.11
+
+workers:
+  hosts:
+    worker_01:
+      ansible_host: 10.100.0.21
+    worker_02:
+      ansible_host: 10.100.0.22
+
+k8s_cluster:
+  children:
+    control_planes:
+    workers:
+  vars:
+    api_advertise_address: 10.100.0.11
