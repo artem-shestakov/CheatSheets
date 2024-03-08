@@ -1,0 +1,60 @@
+NODES = {
+    "ceph01" => {
+        "box" => "generic/debian12",
+        "cpus" => 2,
+        "memory" => 4096,
+        "ip" => {
+            "public" => "10.100.2.11",
+            "cluster" => "10.100.2.131"
+        },
+    },
+    "ceph02" => {
+        "box" => "generic/debian12",
+        "cpus" => 1,
+        "memory" => 4096,
+        "ip" => {
+            "public" => "10.100.2.12",
+            "cluster" => "10.100.2.132"
+        },
+    },
+    "ceph03" => {
+        "box" => "generic/debian12",
+        "cpus" => 1,
+        "memory" => 4096,
+        "ip" => {
+            "public" => "10.100.2.13",
+            "cluster" => "10.100.2.133"
+        },
+    }
+}
+
+Vagrant.configure("2") do |config|
+    NODES.each do |(name, params)|
+        config.vm.define "#{name}" do |c|
+            c.vm.box = "#{params['box']}"
+            c.vm.hostname = "#{name}"
+            c.vm.network "public_network",
+                libvirt__network_name: "ceph-network",
+                ip: "#{params['ip']['cluster']}",
+                libvirt__netmask: "255.255.255.128",
+                dev: "ceph",
+                mode: "bridge",
+                type: "bridge"
+            c.vm.network "public_network",
+                libvirt__network_name: "ceph-public-network",
+                ip: "#{params['ip']['public']}",
+                libvirt__netmask: "255.255.255.128",
+                dev: "ceph-public",
+                mode: "bridge",
+                type: "bridge"
+            c.vm.provider "libvirt" do |lv|
+                lv.memory = params['memory']
+                lv.cpus = params['cpus']
+            end
+            # c.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/key.pub"
+            # c.vm.provision "shell", inline: <<-SHELL
+            # sudo cat /home/vagrant/key.pub >> /home/vagrant/.ssh/authorized_keys
+            # SHELL
+        end
+    end
+end
