@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
                 type: "bridge"
             c.vm.provider "libvirt" do |lv|
                 lv.memory = params['memory']
-                lv.cpus = params['cpus']
+                lv.cpus = params['cpus']           
             end
             c.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/key.pub"
             c.vm.provision "shell", inline: <<-SHELL
