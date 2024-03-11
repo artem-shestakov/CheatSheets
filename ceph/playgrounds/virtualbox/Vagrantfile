@@ -1,0 +1,44 @@
+NODES = {
+    "ceph01" => {
+        "box" => "generic/ubuntu2204",
+        "cpus" => 2,
+        "memory" => 4096,
+        "ip" => "192.168.56.11"
+    },
+    "ceph02" => {
+        "box" => "generic/ubuntu2204",
+        "cpus" => 1,
+        "memory" => 4096,
+        "ip" => "192.168.56.11"
+    },
+    "ceph03" => {
+        "box" => "generic/ubuntu2204",
+        "cpus" => 1,
+        "memory" => 4096,
+        "ip" => "192.168.56.11"
+    }
+}
+
+Vagrant.configure("2") do |config|
+  NODES.each do |(name, params)|
+    
+    config.vm.define "#{name}" do |c|
+      c.vm.box = "#{params['box']}"
+      c.vm.hostname = "#{name}"
+
+      config.vm.network "private_network", ip: "#{params['ip']}", name: "VirtualBox Host-Only Ethernet Adapter"
+
+      (1..1).each do |i|
+        c.vm.disk :disk, size: "10GB", name: "#{name}-osd-#{i}"
+      end
+      c.vm.provider "virtualbox" do |v|
+        v.memory = params['memory']
+        v.cpus = params['cpus']
+      end
+      c.vm.provision "file", source: "key.pub", destination: "/home/vagrant/key.pub"
+      c.vm.provision "shell", inline: <<-SHELL
+      sudo cat /home/vagrant/key.pub >> /home/vagrant/.ssh/authorized_keys
+      SHELL
+    end
+  end
+end
