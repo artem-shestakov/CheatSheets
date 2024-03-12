@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
                     lv.storage :file, :size => '50G', :path => "#{name}-osd-#{i}.img"
                 end
             end
-            c.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/key.pub"
+            c.vm.provision "file", source: "./key.pub", destination: "/home/vagrant/key.pub"
             c.vm.provision "shell", inline: <<-SHELL
             sudo cat /home/vagrant/key.pub >> /home/vagrant/.ssh/authorized_keys
             SHELL
