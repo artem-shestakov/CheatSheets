@@ -30,19 +30,21 @@ ansible-playbook -i inventory/inventory.yaml -u vagrant install.yaml
 ```
 
 ## Kind
-### Cluster examples
+### Run Cluster
 * Without CNI 
-```yaml
-kind: Cluster
+```shell
+cat <<EOF > multinode.yaml             
+kind: Cluster  
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
     disableDefaultCNI: true
     podSubnet: 192.168.0.0/16 # For default Calico subnet
 nodes:
-    - role: control-plane
-      image: kindest/node:v1.29.2@sha256:acc9e82a5a5bd3dfccfd03117e9ef5f96b46108b55cd647fb5e7d0d1a35c9c6f
+    - role: control-plane      image: kindest/node:v1.29.2@sha256:acc9e82a5a5bd3dfccfd03117e9ef5f96b46108b55cd647fb5e7d0d1a35c9c6f
     - role: worker
-      image: kindest/node:v1.29.2@sha256:acc9e82a5a5bd3dfccfd03117e9ef5f96b46108b55cd647fb5e7d0d1a35c9c6f
+EOF
+
+kind create cluster --name multinode --config multinode.yaml
 ```
 
 ## Tools
