@@ -1,0 +1,15 @@
+# version: 2
+# ethernets:
+#   ens3:
+#     dhcp4: true
+version: 2
+ethernets:
+  eth:
+    match:
+      name: en*
+    dhcp4: no
+    optional: true
+    addresses: [${address}]
+    gateway4: ${gateway}
+    nameservers: 
+      addresses: [${nameservers}]
