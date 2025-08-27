@@ -1,6 +1,5 @@
 locals {
-  project = basename(abspath(path.module))
-  pool_name = "pool_${local.project}"
+  pool_name = "pool_${var.project_name}"
 }
 
 resource "libvirt_pool" "pool" {
@@ -11,10 +10,10 @@ resource "libvirt_pool" "pool" {
   }
 }
 
-resource "libvirt_volume" "control_volumes" {
-  count = var.control_nodes.count
+resource "libvirt_volume" "vms_volumes" {
+  for_each = var.vms
 
-  name = "volume_control_${count.index}"
+  name = "volume_control_${each.key}"
   pool = libvirt_pool.pool.name
   source = var.libvirt_volume_source
 }
@@ -24,21 +23,22 @@ data "template_file" "user_data" {
 }
 
 data "template_file" "network_config" {
-  count = var.control_nodes.count
+  for_each = var.vms
 
   template = templatefile("${path.module}/config/network_config.yml", {
-    address = "${replace(var.networks[0], "/\\d+\\/\\d+/", "${count.index + 2}/24")}"
-    gateway = replace(var.networks[0], "/\\d+\\/\\d+/", "1")
+    address = "${each.value.ip}"
+    # gateway = replace(var.networks[0], "/\\d+\\/\\d+/", "1")
+    gateway = cidrhost(var.networks[0], -2)
     nameservers = "8.8.8.8"
   })
 }
 
 resource "libvirt_cloudinit_disk" "cloudinit_disk" {
-  count = var.control_nodes.count
+  for_each = var.vms
 
-  name           = "cloudinit_disk_control_${count.index}"
+  name           = "cloudinit_disk_control_${each.key}"
   user_data      = data.template_file.user_data.rendered
-  network_config = data.template_file.network_config["${count.index}"].rendered
+  network_config = data.template_file.network_config["${each.key}"].rendered
   pool           = libvirt_pool.pool.name
 }
 
@@ -51,7 +51,7 @@ resource "libvirt_network" "network" {
   #  the domain used by the DNS server in this network
   domain = ""
 
-  addresses = var.networks
+  addresses = [var.network]
   
   dns {
     enabled = false
@@ -61,15 +61,15 @@ resource "libvirt_network" "network" {
 }
 
 resource "libvirt_domain" "control_nodes" {
-  count = var.control_nodes.count
+  for_each = var.vms
 
-  name   = "${local.project}-control-${count.index}"
-  memory = var.control_nodes.ram * 1024
-  vcpu   = var.control_nodes.cpu
+  name   = "${each.key}"
+  vcpu   = each.value.cpu
+  memory = each.value.ram * 1024
 
   qemu_agent = true
 
-  cloudinit = libvirt_cloudinit_disk.cloudinit_disk["${count.index}"].id
+  cloudinit = libvirt_cloudinit_disk.cloudinit_disk["${each.key}"].id
 
   network_interface {
     network_name   = libvirt_network.network.name
@@ -91,7 +91,7 @@ resource "libvirt_domain" "control_nodes" {
   }
 
   disk {
-    volume_id = libvirt_volume.control_volumes["${count.index}"].id
+    volume_id = libvirt_volume.vms_volumes["${each.key}"].id
   }
 
   graphics {
