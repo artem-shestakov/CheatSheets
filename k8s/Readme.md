@@ -47,6 +47,12 @@ EOF
 kind create cluster --name multinode --config multinode.yaml
 ```
 
+### Calico
+```shell
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/tigera-operator.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/custom-resources.yaml
+```
+
 ## Tools
 ### Logs
 * [kubetail](https://github.com/johanhaleby/kubetail)
